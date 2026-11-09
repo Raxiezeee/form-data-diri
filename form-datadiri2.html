@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Data Diri Mahasiswa</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    background: white;
+    max-width: 1000px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px #888;
+}
+
+h2, h3 {
+    text-align: center;
+    color: #354bb5;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    padding: 10px 15px;
+    margin-top: 15px;
+    background: #5269d9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hapus {
+    background: #e53935;
+    margin: 0;
+}
+
+.tabel {
+    overflow-x: auto;
+    margin-top: 25px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #5269d9;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+.jumlah {
+    font-weight: bold;
+    color: #354bb5;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>FORM DATA DIRI MAHASISWA</h2>
+
+<form id="formDiri">
+
+<label>Nama Lengkap</label>
+<input type="text" id="nama" required>
+
+<label>Tempat Lahir</label>
+<input type="text" id="tempat" required>
+
+<label>Tanggal Lahir</label>
+<input type="date" id="tanggal" required>
+
+<label>Jenis Kelamin</label>
+<select id="gender" required>
+    <option value="">Pilih Jenis Kelamin</option>
+    <option>Laki-laki</option>
+    <option>Perempuan</option>
+</select>
+
+<label>Email</label>
+<input type="email" id="email" required>
+
+<label>Nomor HP</label>
+<input type="tel" id="hp" required>
+
+<label>Alamat</label>
+<textarea id="alamat" rows="3" required></textarea>
+
+<button type="submit">Simpan Data</button>
+
+</form>
+
+<hr>
+
+<h3>DAFTAR DATA MAHASISWA</h3>
+
+<div class="tabel">
+<table>
+<thead>
+<tr>
+    <th>No</th>
+    <th>Nama</th>
+    <th>Tempat Lahir</th>
+    <th>Tanggal Lahir</th>
+    <th>Jenis Kelamin</th>
+    <th>Email</th>
+    <th>No HP</th>
+    <th>Alamat</th>
+    <th>Aksi</th>
+</tr>
+</thead>
+
+<tbody id="isiTabel"></tbody>
+</table>
+</div>
+
+<p class="jumlah" id="jumlahData">Jumlah Data: 0</p>
+
+</div>
+
+<script>
+
+// Mengambil data yang tersimpan
+let dataMahasiswa = JSON.parse(
+    localStorage.getItem("dataMahasiswa")
+) || [];
+
+const form = document.getElementById("formDiri");
+const tabel = document.getElementById("isiTabel");
+
+// Menyimpan data baru
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let mahasiswa = {
+        nama: document.getElementById("nama").value,
+        tempat: document.getElementById("tempat").value,
+        tanggal: document.getElementById("tanggal").value,
+        gender: document.getElementById("gender").value,
+        email: document.getElementById("email").value,
+        hp: document.getElementById("hp").value,
+        alamat: document.getElementById("alamat").value
+    };
+
+    dataMahasiswa.push(mahasiswa);
+
+    simpanKeBrowser();
+    tampilkanData();
+
+    form.reset();
+
+    alert("Data berhasil disimpan!");
+});
+
+// Menyimpan ke localStorage
+function simpanKeBrowser() {
+    localStorage.setItem(
+        "dataMahasiswa",
+        JSON.stringify(dataMahasiswa)
+    );
+}
+
+// Menampilkan data ke tabel
+function tampilkanData() {
+    tabel.innerHTML = "";
+
+    dataMahasiswa.forEach(function(data, index) {
+        let baris = tabel.insertRow();
+
+        let nilai = [
+            index + 1,
+            data.nama,
+            data.tempat,
+            data.tanggal,
+            data.gender,
+            data.email,
+            data.hp,
+            data.alamat
+        ];
+
+        nilai.forEach(function(item) {
+            let sel = baris.insertCell();
+            sel.textContent = item;
+        });
+
+        let aksi = baris.insertCell();
+
+        let tombol = document.createElement("button");
+        tombol.textContent = "Hapus";
+        tombol.className = "hapus";
+
+        tombol.addEventListener("click", function() {
+            dataMahasiswa.splice(index, 1);
+
+            simpanKeBrowser();
+            tampilkanData();
+        });
+
+        aksi.appendChild(tombol);
+    });
+
+    document.getElementById("jumlahData").textContent =
+        "Jumlah Data: " + dataMahasiswa.length;
+}
+
+// Menampilkan data saat halaman dibuka
+tampilkanData();
+
+</script>
+
+</body>
+</html>
